@@ -59,7 +59,12 @@ function makeObstacle() {
     }
 }
 
-var timer = Timer(3, doge, makeObstacle);
+function makeCat() {
+    var cat = gl5.createImage('nyan_cat.gif', 'cat');
+    cat.size = {x: 50, y: 35};
+    cat.pos.x = gl5.screen.pos.x + gl5.screen.size.x / 2; 
+    cat.pos.y = Math.random() * (gl5.screen.size.y * .7) + gl5.screen.size.y * .15;
+}
 
 function moveObstacle(obstacle, direction) {
     var difX = direction[0],
@@ -70,7 +75,6 @@ function moveObstacle(obstacle, direction) {
     var minX = difX < 1 ? 0 : (BLOCKS_PER_ROW - 1),
         minY = difY < 1 ? 0 : (BLOCKS_PER_COLUMN - 1);
 
-    console.log(minX, minY, difX, difY);
     for (var x = minX; x < BLOCKS_PER_ROW && x >= 0; x -= difX || -1) {
         for (var y = minY; y < BLOCKS_PER_COLUMN && y >= 0; y -= difY || -1) {
             var tile = obstacle[x][y];
@@ -181,22 +185,46 @@ function handleInput() {
     }
 }
 
-gl5.register(function () {
-    gl5.screen.pos.x = doge.pos.x + gl5.screen.size.x / 2 - doge.size.x / 2 - 5;
+var lastTile = 0;
+var lastCat = 500;
+makeObstacle();
 
-    gl5.forEach(hit('doge', 'block'), function (b, p) {
+gl5.register(function () {
+    gl5.screen.pos.x = doge.pos.x + gl5.screen.size.x / 2 - doge.size.x / 2 - 20;
+
+    gl5.forEach(hit('doge', 'block'), function (doge, block) {
         doge.destroy();
     });
 
+    gl5.forEach(hit('doge', 'cat'), function (doge, cat) {
+        doge.inertia.x /= 2;
+        cat.destroy();
+        sound('nyan_cat.ogg');
+    });
+
+    wrap(doge, {y: 0}, {y: gl5.screen.size.y});
+
     if (keyDown('w')) {
-        doge.pos.y -= 3;
+        doge.inertia.y -= 0.5;
     }
     if (keyDown('s')) {
-        doge.pos.y += 3;
+        doge.inertia.y += 0.5;
     }
 
     //purgeTiles();
     handleInput();
+
+    doge.inertia.x += 0.01 * doge.pos.x / 2000;
+    doge.pos.angle = -doge.inertia.y / 5;
+
+    if (doge.pos.x - lastTile > 1000) {
+        lastTile = doge.pos.x;
+        makeObstacle();
+    }
+    if (doge.pos.x - lastCat > 2000) {
+        lastCat = doge.pos.x;
+        makeCat();
+    }
 });
         </script>
     </body>
