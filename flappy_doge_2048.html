@@ -42,20 +42,15 @@ function makeObstacle() {
             var tile = {};
             obstacle.push(tile);
 
-            var block = gl5.createImage('block.png', 'block');
+            var value = Math.pow(2, Math.floor(Math.random() * 3 + 1));
+            tile.value = value;
+
+            var block = gl5.createImage('block' + value + '.png', 'block');
             block.size = {x: 100, y: 100};
             block.pos.x = i * spacing + gl5.screen.pos.x + gl5.screen.size.x / 2 + block.size.x / 2;
             block.pos.y = j * spacing + .5 * block.size.y + .5 * (spacing - block.size.y);
 
-            var value = Math.pow(2, Math.floor(Math.random() * 3 + 1));
-            tile.value = value;
-            var number = gl5.createText(value, 'number', block.pos);
-            number.shadow = null;
-            number.color = '#776E65';
-            number.font = '55px Sans-Serif'
-
             tile.block = block;
-            tile.number = number;
             obstacle[i][j] = tile;
         }
     }
@@ -106,16 +101,15 @@ function moveObstacle(obstacle, direction) {
                     if (target.value === tile.value) {
                         target.value *= 2;
 
-                        var number = gl5.createText(target.value, 'number', target.number.pos);
-                        number.shadow = null;
-                        number.color = '#776E65';
-                        number.font = '55px Sans-Serif'
-                        target.number.destroy();
-                        target.number = number;
+                        var block = gl5.createImage('block' + target.value + '.png', 'block');
+                        block.pos.x = target.block.pos.x;
+                        block.pos.y = target.block.pos.y;
+                        block.size = {x: 100, y: 100};
+                        target.block.destroy();
+                        target.block = block;
 
                         obstacle[oldX][oldY] = null;
                         tile.block.destroy();
-                        tile.number.destroy();
                     }
                     break;
                 } else {
@@ -128,8 +122,6 @@ function moveObstacle(obstacle, direction) {
 
             tile.block.pos.x += totalDifX * spacing;
             tile.block.pos.y += totalDifY * spacing;
-            tile.number.pos.x = tile.block.pos.x;
-            tile.number.pos.y = tile.block.pos.y;
         }
     }
 }
@@ -164,7 +156,6 @@ function purgeTiles() {
                 if (!tile)
                     continue
                 tile.block.destroy();
-                tile.number.destroy();
             }
         }
 
