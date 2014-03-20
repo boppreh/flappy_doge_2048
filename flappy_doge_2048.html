@@ -18,209 +18,229 @@
 var BLOCKS_PER_COLUMN = 5;
 var BLOCKS_PER_ROW = 2;
 
-var doge = gl5.createImage('doge-head.png', 'doge');
-doge.size = {x: 50, y: 50};
-doge.pos.x = 50;
-doge.friction = {x: 0, y: 0.1};
-doge.inertia.x = 3;
+function game() {
+    gl5.layer();
 
-var spacing = gl5.screen.size.y / BLOCKS_PER_COLUMN;
-var obstacles = [];
+    var doge = gl5.createImage('doge-head.png', 'doge');
+    doge.size = {x: 50, y: 50};
+    doge.pos.x = 50;
+    doge.friction = {x: 0, y: 0.1};
+    doge.inertia.x = 3;
 
-function makeObstacle() {
-    var obstacle = [];
-    obstacles.push(obstacle);
+    var spacing = gl5.screen.size.y / BLOCKS_PER_COLUMN;
+    var obstacles = [];
 
-    for (var i = 0; i < BLOCKS_PER_ROW; i++) {
-        obstacle.push([]);
-
-        for (var j = 0; j < BLOCKS_PER_COLUMN; j++) {
-            if (Math.random() < 0.2) {
-                continue;
-            }
-
-            var tile = {};
-            obstacle.push(tile);
-
-            var value = Math.pow(2, Math.floor(Math.random() * 3 + 1));
-            tile.value = value;
-
-            var block = gl5.createImage('block' + value + '.png', 'block');
-            block.size = {x: 100, y: 100};
-            block.pos.x = i * spacing + gl5.screen.pos.x + gl5.screen.size.x / 2 + block.size.x / 2;
-            block.pos.y = j * spacing + .5 * block.size.y + .5 * (spacing - block.size.y);
-
-            tile.block = block;
-            obstacle[i][j] = tile;
-        }
-    }
-}
-
-function makeCat() {
-    var cat = gl5.createImage('nyan_cat.gif', 'cat');
-    cat.size = {x: 50, y: 35};
-    cat.pos.x = gl5.screen.pos.x + gl5.screen.size.x / 2; 
-    cat.pos.y = Math.random() * (gl5.screen.size.y * .7) + gl5.screen.size.y * .15;
-}
-
-function moveObstacle(obstacle, direction) {
-    var difX = direction[0],
-        difY = direction[1];
-
-    // Make sure we move the last tiles first, so they don't block the
-    // previous ones.
-    var minX = difX < 1 ? 0 : (BLOCKS_PER_ROW - 1),
-        minY = difY < 1 ? 0 : (BLOCKS_PER_COLUMN - 1);
-
-    for (var x = minX; x < BLOCKS_PER_ROW && x >= 0; x -= difX || -1) {
-        for (var y = minY; y < BLOCKS_PER_COLUMN && y >= 0; y -= difY || -1) {
-            var tile = obstacle[x][y];
-            if (!tile) {
-                continue;
-            }
-
-            var newX = x,
-                newY = y;
-            var oldX, oldY;
-            var totalDifX = 0,
-                totalDifY = 0;
-
-            while (true) {
-                oldX = newX;
-                oldY = newY;
-
-                newX += difX;
-                newY += difY;
-
-                if (newX >= BLOCKS_PER_ROW || newX < 0 || newY >= BLOCKS_PER_COLUMN || newY < 0) {
-                    break;
-                }
-
-                var target = obstacle[newX][newY];
-                if (target) {
-                    if (target.value === tile.value) {
-                        target.value *= 2;
-
-                        var block = gl5.createImage('block' + target.value + '.png', 'block');
-                        block.pos.x = target.block.pos.x;
-                        block.pos.y = target.block.pos.y;
-                        block.size = {x: 100, y: 100};
-                        target.block.destroy();
-                        target.block = block;
-
-                        obstacle[oldX][oldY] = null;
-                        tile.block.destroy();
-                    }
-                    break;
-                } else {
-                    obstacle[newX][newY] = tile;
-                    obstacle[oldX][oldY] = null;
-                    totalDifX += difX;
-                    totalDifY += difY;
-                }
-            }
-
-            tile.block.pos.x += totalDifX * spacing;
-            tile.block.pos.y += totalDifY * spacing;
-        }
-    }
-}
-
-function moveTiles(direction) {
-    for (var k in obstacles) {
-        moveObstacle(obstacles[k], direction);
-    }
-}
-
-function purgeTiles() {
-    while (obstacles.length) {
-        var obstacle = obstacles[0],
-            minX = 1000;
+    function makeObstacle() {
+        var obstacle = [];
+        obstacles.push(obstacle);
 
         for (var i = 0; i < BLOCKS_PER_ROW; i++) {
+            obstacle.push([]);
+
             for (var j = 0; j < BLOCKS_PER_COLUMN; j++) {
-                var tile = obstacle[i][j];
-                if (!tile)
-                    continue
-                minX = Math.min(tile.block.pos.x, minX)
+                if (Math.random() < 0.2) {
+                    continue;
+                }
+
+                var tile = {};
+                obstacle.push(tile);
+
+                var value = Math.pow(2, Math.floor(Math.random() * 3 + 1));
+                tile.value = value;
+
+                var block = gl5.createImage('block' + value + '.png', 'block');
+                block.size = {x: 100, y: 100};
+                block.pos.x = i * spacing + gl5.screen.pos.x + gl5.screen.size.x / 2 + block.size.x / 2;
+                block.pos.y = j * spacing + .5 * block.size.y + .5 * (spacing - block.size.y);
+
+                tile.block = block;
+                obstacle[i][j] = tile;
             }
         }
+    }
 
-        if (minX > gl5.screen.pos.x - gl5.screen.size.x) {
+    function makeCat() {
+        var cat = gl5.createImage('nyan_cat.gif', 'cat');
+        cat.size = {x: 50, y: 35};
+        cat.pos.x = gl5.screen.pos.x + gl5.screen.size.x / 2; 
+        cat.pos.y = Math.random() * (gl5.screen.size.y * .7) + gl5.screen.size.y * .15;
+    }
+
+    function moveObstacle(obstacle, direction) {
+        var difX = direction[0],
+            difY = direction[1];
+
+        // Make sure we move the last tiles first, so they don't block the
+        // previous ones.
+        var minX = difX < 1 ? 0 : (BLOCKS_PER_ROW - 1),
+            minY = difY < 1 ? 0 : (BLOCKS_PER_COLUMN - 1);
+
+        for (var x = minX; x < BLOCKS_PER_ROW && x >= 0; x -= difX || -1) {
+            for (var y = minY; y < BLOCKS_PER_COLUMN && y >= 0; y -= difY || -1) {
+                var tile = obstacle[x][y];
+                if (!tile) {
+                    continue;
+                }
+
+                var newX = x,
+                    newY = y;
+                var oldX, oldY;
+                var totalDifX = 0,
+                    totalDifY = 0;
+
+                while (true) {
+                    oldX = newX;
+                    oldY = newY;
+
+                    newX += difX;
+                    newY += difY;
+
+                    if (newX >= BLOCKS_PER_ROW || newX < 0 || newY >= BLOCKS_PER_COLUMN || newY < 0) {
+                        break;
+                    }
+
+                    var target = obstacle[newX][newY];
+                    if (target) {
+                        if (target.value === tile.value) {
+                            target.value *= 2;
+
+                            var block = gl5.createImage('block' + target.value + '.png', 'block');
+                            block.pos.x = target.block.pos.x;
+                            block.pos.y = target.block.pos.y;
+                            block.size = {x: 100, y: 100};
+                            target.block.destroy();
+                            target.block = block;
+
+                            obstacle[oldX][oldY] = null;
+                            tile.block.destroy();
+                        }
+                        break;
+                    } else {
+                        obstacle[newX][newY] = tile;
+                        obstacle[oldX][oldY] = null;
+                        totalDifX += difX;
+                        totalDifY += difY;
+                    }
+                }
+
+                tile.block.pos.x += totalDifX * spacing;
+                tile.block.pos.y += totalDifY * spacing;
+            }
+        }
+    }
+
+    function moveTiles(direction) {
+        for (var k in obstacles) {
+            moveObstacle(obstacles[k], direction);
+        }
+    }
+
+    function purgeTiles() {
+        while (obstacles.length) {
+            var obstacle = obstacles[0],
+                minX = 1000;
+
+            for (var i = 0; i < BLOCKS_PER_ROW; i++) {
+                for (var j = 0; j < BLOCKS_PER_COLUMN; j++) {
+                    var tile = obstacle[i][j];
+                    if (!tile)
+                        continue
+                    minX = Math.min(tile.block.pos.x, minX)
+                }
+            }
+
+            if (minX > gl5.screen.pos.x - gl5.screen.size.x) {
+                return;
+            }
+
+            for (var i = 0; i < BLOCKS_PER_ROW; i++) {
+                for (var j = 0; j < BLOCKS_PER_COLUMN; j++) {
+                    var tile = obstacle[i][j];
+                    if (!tile)
+                        continue
+                    tile.block.destroy();
+                }
+            }
+
+            obstacles.shift();
+        }
+    }
+
+    function handleInput() {
+        if (keyDown('up')) {
+            moveTiles([0, -1]);
+        }
+        if (keyDown('down')) {
+            moveTiles([0, 1]);
+        }
+        if (keyDown('left')) {
+            moveTiles([-1, 0]);
+        }
+        if (keyDown('right')) {
+            moveTiles([1, 0]);
+        }
+    }
+
+    var lastTile = 0;
+    var lastCat = 500;
+    makeObstacle();
+
+    gl5.register(function () {
+        gl5.screen.pos.x = doge.pos.x + gl5.screen.size.x / 2 - doge.size.x / 2 - 20;
+
+        if (!exists('doge').length && (keyDown('space') || keyDown('r'))) {
+            gl5.unlayer();
+            game();
             return;
         }
 
-        for (var i = 0; i < BLOCKS_PER_ROW; i++) {
-            for (var j = 0; j < BLOCKS_PER_COLUMN; j++) {
-                var tile = obstacle[i][j];
-                if (!tile)
-                    continue
-                tile.block.destroy();
-            }
+        gl5.forEach(hit('doge', 'block'), function (doge, block) {
+            doge.destroy();
+            sound('hurt.wav');
+
+            var restart = gl5.createText('Restart?', 'restart');
+            restart.friction = {angle: 0.05, x: 0, y: 0};
+            restart.color = '#CECECE';
+            restart.font = '50px Arial'
+            restart.shadow = null;
+            restart.pos.x = gl5.screen.pos.x;
+            restart.pos.y = gl5.screen.pos.y;
+            push(restart, {angle: Math.random() * 0.02});
+        });
+
+        gl5.forEach(hit('doge', 'cat'), function (doge, cat) {
+            doge.inertia.x /= 2;
+            cat.destroy();
+            sound('nyan_cat.ogg');
+        });
+
+        wrap(doge, {y: 0}, {y: gl5.screen.size.y});
+
+        if (keyDown('w')) {
+            doge.inertia.y -= 0.5;
+        }
+        if (keyDown('s')) {
+            doge.inertia.y += 0.5;
         }
 
-        obstacles.shift();
-    }
+        //purgeTiles();
+        handleInput();
+
+        doge.inertia.x += 0.01 * doge.pos.x / 2000;
+        doge.pos.angle = -doge.inertia.y / 5;
+        if (doge.pos.x - lastTile > 1000) {
+            lastTile = doge.pos.x;
+            makeObstacle();
+            sound('ping.ogg');
+        }
+        if (doge.pos.x - lastCat > 2000) {
+            lastCat = doge.pos.x;
+            makeCat();
+        }
+    });
 }
 
-function handleInput() {
-    if (keyDown('up')) {
-        moveTiles([0, -1]);
-    }
-    if (keyDown('down')) {
-        moveTiles([0, 1]);
-    }
-    if (keyDown('left')) {
-        moveTiles([-1, 0]);
-    }
-    if (keyDown('right')) {
-        moveTiles([1, 0]);
-    }
-}
-
-var lastTile = 0;
-var lastCat = 500;
-makeObstacle();
-
-gl5.register(function () {
-    gl5.screen.pos.x = doge.pos.x + gl5.screen.size.x / 2 - doge.size.x / 2 - 20;
-
-    gl5.forEach(hit('doge', 'block'), function (doge, block) {
-        doge.destroy();
-        sound('hurt.wav');
-    });
-
-    gl5.forEach(hit('doge', 'cat'), function (doge, cat) {
-        doge.inertia.x /= 2;
-        cat.destroy();
-        sound('nyan_cat.ogg');
-    });
-
-    wrap(doge, {y: 0}, {y: gl5.screen.size.y});
-
-    if (keyDown('w')) {
-        doge.inertia.y -= 0.5;
-    }
-    if (keyDown('s')) {
-        doge.inertia.y += 0.5;
-    }
-
-    //purgeTiles();
-    handleInput();
-
-    doge.inertia.x += 0.01 * doge.pos.x / 2000;
-    doge.pos.angle = -doge.inertia.y / 5;
-
-    if (doge.pos.x - lastTile > 1000) {
-        lastTile = doge.pos.x;
-        makeObstacle();
-        sound('ping.ogg');
-    }
-    if (doge.pos.x - lastCat > 2000) {
-        lastCat = doge.pos.x;
-        makeCat();
-    }
-});
+game();
         </script>
     </body>
 </html>
