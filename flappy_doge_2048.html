@@ -194,6 +194,7 @@ gl5.register(function () {
 
     gl5.forEach(hit('doge', 'block'), function (doge, block) {
         doge.destroy();
+        sound('hurt.wav');
     });
 
     gl5.forEach(hit('doge', 'cat'), function (doge, cat) {
@@ -220,6 +221,7 @@ gl5.register(function () {
     if (doge.pos.x - lastTile > 1000) {
         lastTile = doge.pos.x;
         makeObstacle();
+        sound('ping.ogg');
     }
     if (doge.pos.x - lastCat > 2000) {
         lastCat = doge.pos.x;
