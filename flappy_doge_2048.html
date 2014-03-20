@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+    <meta charset='utf-8' />
+    <head>
+        <title>Flappy Dog 2048</title>
+    </head>
+
+    <body style='background: black;'>
+        <canvas id='canvas' width=600 height=600 style='display: block; background: white; margin-left: auto; margin-right: auto;'></canvas>
+
+        <script type='text/javascript' src='gl5.js'></script>
+        <script type='text/javascript' src='behaviors.js'></script>
+        <script type='text/javascript' src='conditions.js'></script>
+        <script>
+var doge = gl5.createImage('doge-head.png', 'doge')
+doge.size = {x: 50, y: 50};
+doge.pos.x = 50;
+doge.friction = {x: 0, y: 0.1};
+doge.inertia.x = 5;
+
+gl5.schedule(.5, function () {
+    makePipe();
+})
+
+gl5.register(function () {
+    if (exists('doge').length === 0) {
+        gl5.paused = true;
+        return;
+    }
+
+    doge.pos.angle = (doge.inertia.y / 50) * (-Math.PI / 2);
+    gl5.screen.pos.x = doge.pos.x + 150;
+
+	doge.inertia.y += 1.2;
+    if (clicked()) {
+        doge.inertia.y -= 30;
+    }
+
+    gl5.forEach(hit('doge', 'pipe'), function (b, p) {
+        doge.destroy();
+    })
+});
+        </script>
+    </body>
+</html>
