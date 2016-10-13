@@ -27,27 +27,37 @@ Topics:
 - mitochondria is the powerhouse of the cell
 - trolley problem
 - speedrunning (bit of a dud)
+- mandella effect
+- harambe (does it count?)
 - cask of Amontillado
 - _the cask is recently popular, and saw only one "place of honor" in the wild so far. This should be around now, October 2016_
 - ~this is not a place of honor~
+- ~trump's presidency (does it count?)~
 - ~ea-nasir~
 - ~nevermore raven~
+- ~suicide forest~
 - ~ozymandias~
 - ~panzerschokolade (not sure about date)~
+- ~area 51~
 - ~carcinisation~
 - ~derivatives~
+- ~coronavirus~
 - ~demon core~
 - ~sentinel island (bit of a dud)~
+- ~inflation (does it count?)~
 - ~stonehenge~
+- ~georgism~
 - _first inflection_
 - ~thagomizer (bit of a dud)~
 - ~tarrare  (bit of a dud)~
+- ~501st Legion (bit of a dud)~
 - ~voynich manuscript~
+- ~mansa musa~
 - ~sober sue~
-- ~501st Legion~
 - ~secessions of the plebeians~
 - ~arthritic neanderthal  (bit of a dud)~
 - ~project orion~
 - ~alice and bob~
 - ~nuclear manhole~
 - ~false vacuum decay (bit of a dud)~
+- ...
